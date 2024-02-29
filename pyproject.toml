@@ -59,7 +59,7 @@ path = "PytorchWildlife/version.py"
 [tool.pdm.dev-dependencies]
 test = ["pytest", "pytest-mock", "pytest-cov", "coverage"]
 quality = ["autoflake", "autopep8", "black", "flake8", "isort"]
-dist = ["twine"]
+dist = ["build", "twine"]
 
 [tool.pytest.ini_options]
 markers = ["ci_skip"]
