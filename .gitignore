@@ -6,7 +6,10 @@ __pycache__
 *temp*
 PytorchWildlife.egg-info/
 *dev*
-*test*
 *setup/*
 *dist/*
 *VSCodeCounter*
+.pdm-python
+node_modules
+.coverage
+tmp*

@@ -1,0 +1,68 @@
+[build-system]
+requires = ["pdm-pep517>=1.0.0"]
+build-backend = "pdm.pep517.api"
+
+[project]
+name = "animalsearch"
+description = "A CLI for sorting animal images."
+requires-python = ">=3.10"
+authors = [{ name = "Tim Cogan" }]
+dependencies = [
+    "colorama",
+    "numpy",
+    "torch",
+    "torchvision",
+    "torchaudio",
+    "tqdm",
+    "opencv-python",
+    "Pillow",
+    "supervision",
+    "gradio",
+    "ultralytics-yolov5",
+]
+readme = "README.md"
+license = { text = "MIT" }
+dynamic = ["version"]
+
+[project.optional-dependencies]
+
+[tool.autoflake]
+remove-all-unused-imports = true
+remove-unused-variables = true
+
+[tool.autopep8]
+max_line_length = 120
+ignore = "E501,W6,E203"
+in-place = true
+recursive = true
+aggressive = 3
+
+[tool.black]
+line-length = 120
+target-version = ["py310"]
+
+[tool.isort]
+ensure_newline_before_comments = true
+force_grid_wrap = 0
+include_trailing_comma = true
+line_length = 119
+lines_after_imports = 2
+multi_line_output = 3
+use_parentheses = false
+
+[tool.pyright]
+
+[tool.pdm.version]
+source = "file"
+path = "PytorchWildlife/version.py"
+
+[tool.pdm.dev-dependencies]
+test = ["pytest", "pytest-mock", "pytest-cov", "coverage"]
+quality = ["autoflake", "autopep8", "black", "flake8", "isort"]
+dist = ["twine"]
+
+[tool.pytest.ini_options]
+markers = ["ci_skip"]
+
+[project.scripts]
+animalsearch = "PytorchWildlife.cli:main"
