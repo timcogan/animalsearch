@@ -6,6 +6,7 @@ from typing import Any, Final, List, Tuple
 
 import cv2
 import numpy as np
+import torch
 import torchvision
 import torchvision.transforms as transforms
 from colorama import Fore
@@ -33,8 +34,12 @@ model = None
 def detect_animals(image: Tensor, device: str) -> Any:
     global model
     if model is None:
+        if device == "":
+            device = "cuda" if torch.cuda.is_available() else "cpu"
         model = pw_detection.MegaDetectorV5(device=device)  # Model weights are automatically downloaded.
+        assert (model.IMAGE_SIZE,) * 2 == IMAGE_SHAPE_FOR_DETECTION
     image = image.clone().detach()
+    # TODO Leverage MegaDetector_v5_Transform
     image = transforms.Resize(IMAGE_SHAPE_FOR_DETECTION)(image)
     norm_image = image.float() / image.max()
     out = model.single_image_detection(norm_image)  # TODO Batch detection?
@@ -120,7 +125,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--mode", default="display", choices=["sort", "display"], help="display (default) or sort images with animals"
     )
-    parser.add_argument("--device", type=str, default="cpu", help="specify `cpu`, `cuda:0`, `cuda:1`, etc.")
+    parser.add_argument("--device", type=str, default="", help="specify `cpu` or `cuda`")
     parser.add_argument("--version", "-V", action="version", version=f"animalsearch version {Fore.GREEN}{__version__}")
     return parser.parse_args()
 
