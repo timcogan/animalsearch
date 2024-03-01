@@ -28,10 +28,10 @@ NO_ANIMALS_SUBFOLDER: Final[str] = "no_animals"
 model = None
 
 
-def detect_animals(image: Tensor) -> Any:
+def detect_animals(image: Tensor, device: str) -> Any:
     global model
     if model is None:
-        model = pw_detection.MegaDetectorV5()  # Model weights are automatically downloaded.
+        model = pw_detection.MegaDetectorV5(device=device)  # Model weights are automatically downloaded.
     image = image.clone().detach()
     image = transforms.Resize(IMAGE_SHAPE_FOR_DETECTION)(image)
     norm_image = image.float() / image.max()
@@ -58,7 +58,7 @@ def sanity_check_folder(image_paths: List[Path]) -> None:
             sys.exit(0)
 
 
-def sort_images(folder: Path) -> None:
+def sort_images(folder: Path, device: str) -> None:
     image_paths = list(folder.iterdir())
     sanity_check_folder(image_paths)
 
@@ -67,19 +67,19 @@ def sort_images(folder: Path) -> None:
 
     for image_path in tqdm(image_paths):
         image = read_image(image_path)
-        det_result = detect_animals(image)
+        det_result = detect_animals(image, device)
         contains_animal = len(det_result) != 0
         new_folder = folder / (ANIMALS_SUBFOLDER if contains_animal else NO_ANIMALS_SUBFOLDER)
         shutil.move(image_path, new_folder)
 
 
-def display_animals(folder: Path, trace_color: Tuple[int, int, int] = (0, 0, 255), trace_size: int = 10):
+def display_animals(folder: Path, device: str, trace_color: Tuple[int, int, int] = (0, 0, 255), trace_size: int = 10):
     for image_path in tqdm(list(folder.iterdir())):
         image = read_image(image_path)
         original_chns, original_rows, original_cols = image.shape
         original_image = np.array(image.clone().detach().permute(1, 2, 0))
 
-        detections = detect_animals(image)
+        detections = detect_animals(image, device)
         if len(detections) == 0:
             continue  # Don't display an image without animals
 
@@ -107,9 +107,9 @@ def display_image(image: ndarray, window_name: str = "image") -> None:
 
 def process_images(args: argparse.Namespace) -> None:
     if args.mode == "sort":
-        sort_images(Path(args.folder))
+        sort_images(Path(args.folder), args.device)
     else:
-        display_animals(Path(args.folder))
+        display_animals(Path(args.folder), args.device)
 
 
 def parse_args() -> argparse.Namespace:
@@ -118,6 +118,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--mode", default="display", choices=["sort", "display"], help="display (default) or sort images with animals"
     )
+    parser.add_argument("--device", type=str, default="cpu", help="specify `cpu`, `cuda:0`, `cuda:1`, etc.")
     return parser.parse_args()
 
 
