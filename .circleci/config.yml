@@ -23,23 +23,13 @@ jobs:
           command: make test
       - codecov/upload:
           file: coverage.xml
-  pypi_publish:
-    docker:
-      - image: circleci/python:3.10-node
-    steps:
-      - checkout
-      - run:
-          name: Upload to PyPi
-          command: make pypi
+      - when:
+          condition:
+            equal: [ main, << pipeline.git.branch >> ]
+          steps:
+            - run: make pypi
 
 workflows:
   test:
     jobs:
       - test
-      - pypi_publish:
-          requires:
-            - test
-          filters:
-            branches:
-              only:
-                - main
