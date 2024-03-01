@@ -16,6 +16,8 @@ from tqdm import tqdm
 
 from PytorchWildlife.models import detection as pw_detection
 
+from .version import __version__
+
 
 colorama_init(autoreset=True)
 
@@ -119,6 +121,7 @@ def parse_args() -> argparse.Namespace:
         "--mode", default="display", choices=["sort", "display"], help="display (default) or sort images with animals"
     )
     parser.add_argument("--device", type=str, default="cpu", help="specify `cpu`, `cuda:0`, `cuda:1`, etc.")
+    parser.add_argument("--version", "-V", action="version", version=f"animalsearch version {Fore.GREEN}{__version__}")
     return parser.parse_args()
 
 
