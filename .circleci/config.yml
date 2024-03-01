@@ -27,7 +27,7 @@ jobs:
           condition:
             equal: [ main, << pipeline.git.branch >> ]
           steps:
-            - run: echo "I am on main"
+            - run: make pypi
 
 workflows:
   test:
