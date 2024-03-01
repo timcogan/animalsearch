@@ -25,9 +25,9 @@ jobs:
           file: coverage.xml
       - when:
           condition:
-            equal: [ pypi, << pipeline.git.branch >> ]
+            equal: [ main, << pipeline.git.branch >> ]
           steps:
-            - run: echo "I am on pypi"
+            - run: echo "I am on main"
 
 workflows:
   test:
